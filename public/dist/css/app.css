@@ -15665,7 +15665,17 @@ var render = function() {
   return _c("div", [
     _c(
       "div",
-      { staticClass: "top-right links" },
+      {
+        directives: [
+          {
+            name: "show",
+            rawName: "v-show",
+            value: _vm.authenticated,
+            expression: "authenticated"
+          }
+        ],
+        staticClass: "top-right links"
+      },
       [
         _vm.authenticated
           ? [
@@ -15686,35 +15696,164 @@ var render = function() {
       2
     ),
     _vm._v(" "),
-    _c("div", { staticClass: "text-center" }, [
-      _c("div", { staticClass: "title mb-4" }, [
-        _vm._v("\n      " + _vm._s(_vm.title) + "\n    ")
-      ]),
-      _vm._v(" "),
-      _vm._m(0)
-    ])
+    _c(
+      "div",
+      { staticClass: "text-center" },
+      [
+        _c("div", { staticClass: "title mb-4" }, [
+          _vm._v("\n      " + _vm._s(_vm.title) + " v.1.0.0\n    ")
+        ]),
+        _vm._v(" "),
+        _c(
+          "div",
+          { staticClass: "form-group" },
+          [
+            _c("b-form-select", {
+              attrs: { options: _vm.options, disabled: _vm.isReadOnly },
+              model: {
+                value: _vm.selected,
+                callback: function($$v) {
+                  _vm.selected = $$v
+                },
+                expression: "selected"
+              }
+            })
+          ],
+          1
+        ),
+        _vm._v(" "),
+        _c(
+          "div",
+          { staticClass: "form-group" },
+          [
+            _c(
+              "b-input-group",
+              [
+                _c("b-form-input", {
+                  attrs: {
+                    readonly: _vm.isReadOnly,
+                    placeholder:
+                      "Masukkan URL eRapor SMK. Contoh: http://localhost:8154 atau http://erapor.smkcontoh.sch.id"
+                  },
+                  model: {
+                    value: _vm.url,
+                    callback: function($$v) {
+                      _vm.url = $$v
+                    },
+                    expression: "url"
+                  }
+                }),
+                _vm._v(" "),
+                _c(
+                  "b-input-group-append",
+                  [
+                    _c(
+                      "b-button",
+                      {
+                        attrs: { variant: "info", disabled: _vm.isReadOnly },
+                        on: {
+                          click: function($event) {
+                            return _vm.tesKoneksi()
+                          }
+                        }
+                      },
+                      [_vm._v("Tes Koneksi")]
+                    )
+                  ],
+                  1
+                )
+              ],
+              1
+            )
+          ],
+          1
+        ),
+        _vm._v(" "),
+        _c(
+          "div",
+          { staticClass: "form-group" },
+          [
+            _c(
+              "b-button",
+              {
+                directives: [
+                  {
+                    name: "show",
+                    rawName: "v-show",
+                    value: _vm.success,
+                    expression: "success"
+                  }
+                ],
+                attrs: { block: "", variant: "primary" },
+                on: {
+                  click: function($event) {
+                    return _vm.kirimData()
+                  }
+                }
+              },
+              [_vm._v("Kirim Data Dapodik ke eRapor SMK")]
+            )
+          ],
+          1
+        ),
+        _vm._v(" "),
+        _c(
+          "b-alert",
+          {
+            directives: [
+              {
+                name: "show",
+                rawName: "v-show",
+                value: _vm.success,
+                expression: "success"
+              }
+            ],
+            attrs: { show: "", variant: "success" }
+          },
+          [_vm._v(_vm._s(_vm.success_text))]
+        ),
+        _vm._v(" "),
+        _c(
+          "b-alert",
+          {
+            directives: [
+              {
+                name: "show",
+                rawName: "v-show",
+                value: _vm.danger,
+                expression: "danger"
+              }
+            ],
+            attrs: { show: "", variant: "danger" }
+          },
+          [_vm._v(_vm._s(_vm.danger_text))]
+        )
+      ],
+      1
+    )
   ])
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "links" }, [
-      _c(
-        "a",
-        { attrs: { href: "https://github.com/cretueusebiu/laravel-vue-spa" } },
-        [_vm._v("github.com/cretueusebiu/laravel-vue-spa")]
-      )
-    ])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_welcome_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./welcome.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/pages/welcome.vue?vue&type=script&lang=js&");
 /* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_welcome_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_1__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -15746,21 +15885,95 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   layout: 'basic',
+  created: function created() {
+    this.loadPostsData();
+  },
   metaInfo: function metaInfo() {
     return {
-      title: this.$t('home')
+      title: 'Beranda'
     };
   },
   data: function data() {
     return {
-      title: window.config.appName
+      title: window.config.appName,
+      selected: null,
+      url: null,
+      options: [{
+        value: null,
+        text: 'Pilih NPSN'
+      }, {
+        value: 'a',
+        text: 'This is option a'
+      }],
+      success: false,
+      danger: false,
+      success_text: '',
+      danger_text: '',
+      isReadOnly: false
     };
   },
   computed: Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])({
     authenticated: 'auth/check'
-  })
+  }),
+  methods: {
+    tesKoneksi: function tesKoneksi() {
+      var _this = this;
+
+      axios__WEBPACK_IMPORTED_MODULE_1___default.a.post("/api/dapodik/cek-koneksi", {
+        sekolah_id: this.selected,
+        url: this.url
+      }).then(function (response) {
+        var getData = response.data.data;
+
+        if (getData) {
+          if (getData.sekolah) {
+            _this.success = true;
+            _this.success_text = 'Data Sekolah ditemukan di aplikasi eRapor SMK. Silahkan klik tombol di atas untuk mengirim data Dapodik ke aplikasi eRapor SMK';
+            _this.isReadOnly = true;
+          } else {
+            _this.danger = true;
+            _this.danger_text = 'Data Sekolah tidak ditemukan di aplikasi eRapor SMK';
+          }
+        } else {
+          _this.danger = true;
+          _this.danger_text = 'Koneksi ke aplikasi eRapor SMK gagal. Silahkan periksa kembali URL eRapor SMK';
+        }
+      });
+    },
+    kirimData: function kirimData() {
+      axios__WEBPACK_IMPORTED_MODULE_1___default.a.post("/api/dapodik/kirim-data", {
+        sekolah_id: this.selected,
+        url: this.url
+      }).then(function (response) {
+        var getData = response.data.data;
+        console.log(getData);
+      });
+    },
+    loadPostsData: function loadPostsData() {
+      var _this2 = this;
+
+      axios__WEBPACK_IMPORTED_MODULE_1___default.a.post("/api/dapodik/sekolah").then(function (response) {
+        var tempData = [{
+          value: null,
+          text: 'Pilih Sekolah'
+        }];
+        var getData = response.data.data;
+        getData.forEach(myFunction);
+
+        function myFunction(item) {
+          var a = {};
+          a.value = item.sekolah_id;
+          a.text = item.nama;
+          tempData.push(a);
+        }
+
+        _this2.options = tempData;
+      });
+    }
+  }
 });__webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_welcome_vue_vue_type_style_index_0_id_cdd8e9ee_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/style-loader!../../../node_modules/css-loader??ref--6-1!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--6-2!../../../node_modules/vue-loader/lib??vue-loader-options!./welcome.vue?vue&type=style&index=0&id=cdd8e9ee&scoped=true&lang=css& */ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/pages/welcome.vue?vue&type=style&index=0&id=cdd8e9ee&scoped=true&lang=css&");
 /* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_welcome_vue_vue_type_style_index_0_id_cdd8e9ee_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_welcome_vue_vue_type_style_index_0_id_cdd8e9ee_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__);
