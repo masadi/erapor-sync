@@ -49,7 +49,7 @@ export default {
     this.loadPostsData()
   },
   metaInfo () {
-    return { title: this.$t('home') }
+    return { title: 'Beranda' }
   },
 
   data: () => ({
