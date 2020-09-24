@@ -18,7 +18,7 @@
 
     <div class="text-center">
       <div class="title mb-4">
-        {{ title }}
+        {{ title }} v.1.0.0
       </div>
       <div class="form-group">
         <b-form-select v-model="selected" :options="options" v-bind:disabled="isReadOnly"></b-form-select>
