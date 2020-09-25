@@ -54,7 +54,7 @@ class DapodikController extends Controller
         return response()->json(['status' => 'success', 'data' => $text]);
     }
     public function kirim_data(Request $request){
-        Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Sedang mengirim data Referensi Wilayah']));
+        Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Mengirim data Referensi Wilayah']));
         $all_data = $this->get_wilayah();
         $response = Http::withOptions([
             'verify' => false,
@@ -65,11 +65,11 @@ class DapodikController extends Controller
             'data' => HelperModel::prepare_send(json_encode($all_data)),
             'permintaan' => 'wilayah',
         ]);
-        Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Sedang mengirim data Referensi Jurusan']));
+        Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Mengirim data Referensi Jurusan']));
         $all_data = $this->get_jurusan($request, 1);
-        Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Sedang mengirim data Referensi Kurikulum']));
+        Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Mengirim data Referensi Kurikulum']));
         $all_data = $this->get_kurikulum($request, 1);
-        Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Sedang mengirim data Referensi Mata Pelajaran']));
+        Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Mengirim data Referensi Mata Pelajaran']));
         $all_data = $this->get_mata_pelajaran($request, 1);
         $response = Http::withOptions([
             'verify' => false,
@@ -80,7 +80,7 @@ class DapodikController extends Controller
             'data' => HelperModel::prepare_send(json_encode($all_data)),
             'permintaan' => 'mata_pelajaran',
         ]);
-        Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Sedang mengirim data Referensi Mata Pelajaran Kurikulum']));
+        Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Mengirim data Referensi Mata Pelajaran Kurikulum']));
         $all_data = $this->get_mata_pelajaran_kurikulum($request, 1);
         $response = Http::withOptions([
             'verify' => false,
@@ -91,7 +91,7 @@ class DapodikController extends Controller
             'data' => HelperModel::prepare_send(json_encode($all_data)),
             'permintaan' => 'mapel_kur',
         ]);
-        Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Sedang mengirim data sekolah']));
+        Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Mengirim data sekolah']));
         $all_data = $this->get_sekolah($request, 1);
         $response = Http::withOptions([
             'verify' => false,
@@ -102,7 +102,7 @@ class DapodikController extends Controller
             'data' => HelperModel::prepare_send(json_encode($all_data)),
             'permintaan' => 'sekolah',
         ]);
-        Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Sedang mengirim data PTK']));
+        Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Mengirim data PTK']));
         $all_data = $this->get_ptk($request, 1);
         $response = Http::withOptions([
             'verify' => false,
@@ -113,7 +113,7 @@ class DapodikController extends Controller
             'data' => HelperModel::prepare_send(json_encode($all_data)),
             'permintaan' => 'guru',
         ]);
-        Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Sedang mengirim data Rombongan Belajar']));
+        Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Mengirim data Rombongan Belajar']));
         $all_data = $this->get_rombongan_belajar($request, 1);
         $response = Http::withOptions([
             'verify' => false,
@@ -124,7 +124,7 @@ class DapodikController extends Controller
             'data' => HelperModel::prepare_send(json_encode($all_data)),
             'permintaan' => 'rombongan_belajar',
         ]);
-        Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Sedang mengirim data Peserta Didik Aktif']));
+        Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Mengirim data Peserta Didik Aktif']));
         $all_data = $this->get_peserta_didik($request, 1);
         $response = Http::withOptions([
             'verify' => false,
@@ -135,7 +135,7 @@ class DapodikController extends Controller
             'data' => HelperModel::prepare_send(json_encode($all_data)),
             'permintaan' => 'siswa_aktif',
         ]);
-        Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Sedang mengirim data Peserta Didik Keluar']));
+        Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Mengirim data Peserta Didik Keluar']));
         $all_data = $this->get_peserta_didik($request->all() + ['keluar' => 1], 1);
         $response = Http::withOptions([
             'verify' => false,
@@ -146,7 +146,7 @@ class DapodikController extends Controller
             'data' => HelperModel::prepare_send(json_encode($all_data)),
             'permintaan' => 'siswa_keluar',
         ]);
-        Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Sedang mengirim data Pembelajaran']));
+        Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Mengirim data Pembelajaran']));
         $all_data = $this->get_pembelajaran($request, 1);
         $response = Http::withOptions([
             'verify' => false,
@@ -157,7 +157,7 @@ class DapodikController extends Controller
             'data' => HelperModel::prepare_send(json_encode($all_data)),
             'permintaan' => 'pembelajaran',
         ]);
-        Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Sedang mengirim data Ekstrakurikuler']));
+        Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Mengirim data Ekstrakurikuler']));
         $all_data = $this->get_ekskul($request, 1);
         $response = Http::withOptions([
             'verify' => false,
@@ -168,7 +168,7 @@ class DapodikController extends Controller
             'data' => HelperModel::prepare_send(json_encode($all_data)),
             'permintaan' => 'ekskul',
         ]);
-        Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Sedang mengirim data Anggota Ekskul']));
+        Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Mengirim data Anggota Ekskul']));
         $all_data = $this->get_anggota_ekskul($request, 1);
         $response = Http::withOptions([
             'verify' => false,
@@ -179,7 +179,7 @@ class DapodikController extends Controller
             'data' => HelperModel::prepare_send(json_encode($all_data)),
             'permintaan' => 'anggota_ekskul',
         ]);
-        Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Sedang mengirim data DUDI']));
+        Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Mengirim data DUDI']));
         $all_data = $this->get_dudi($request, 1);
         $response = Http::withOptions([
             'verify' => false,
