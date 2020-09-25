@@ -39,4 +39,5 @@ Route::group(['prefix' => 'dapodik'], function(){
     Route::post('sekolah', 'DapodikController@sekolah');
     Route::post('cek-koneksi', 'DapodikController@cek_koneksi');
     Route::post('kirim-data', 'DapodikController@kirim_data');
+    Route::get('hitung', 'DapodikController@hitung');
 });

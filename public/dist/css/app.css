@@ -15711,11 +15711,11 @@ var render = function() {
             _c("b-form-select", {
               attrs: { options: _vm.options, disabled: _vm.isReadOnly },
               model: {
-                value: _vm.selected,
+                value: _vm.sekolah_id,
                 callback: function($$v) {
-                  _vm.selected = $$v
+                  _vm.sekolah_id = $$v
                 },
-                expression: "selected"
+                expression: "sekolah_id"
               }
             })
           ],
@@ -15750,14 +15750,61 @@ var render = function() {
                     _c(
                       "b-button",
                       {
-                        attrs: { variant: "info", disabled: _vm.isReadOnly },
+                        attrs: {
+                          block: "",
+                          variant: "info",
+                          disabled: _vm.isReadOnly
+                        },
                         on: {
                           click: function($event) {
                             return _vm.tesKoneksi()
                           }
                         }
                       },
-                      [_vm._v("Tes Koneksi")]
+                      [
+                        _c("b-spinner", {
+                          directives: [
+                            {
+                              name: "show",
+                              rawName: "v-show",
+                              value: _vm.isTesKoneksi,
+                              expression: "isTesKoneksi"
+                            }
+                          ],
+                          attrs: { small: "", type: "grow" }
+                        }),
+                        _vm._v(" "),
+                        _c(
+                          "span",
+                          {
+                            directives: [
+                              {
+                                name: "show",
+                                rawName: "v-show",
+                                value: !_vm.isTesKoneksi,
+                                expression: "!isTesKoneksi"
+                              }
+                            ]
+                          },
+                          [_vm._v("Tes Koneksi")]
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "span",
+                          {
+                            directives: [
+                              {
+                                name: "show",
+                                rawName: "v-show",
+                                value: _vm.isTesKoneksi,
+                                expression: "isTesKoneksi"
+                              }
+                            ]
+                          },
+                          [_vm._v("Mengecek alamat eRapor SMK...")]
+                        )
+                      ],
+                      1
                     )
                   ],
                   1
@@ -15773,6 +15820,48 @@ var render = function() {
           "div",
           { staticClass: "form-group" },
           [
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.semester_id,
+                  expression: "semester_id"
+                }
+              ],
+              attrs: { type: "hidden" },
+              domProps: { value: _vm.semester_id },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.semester_id = $event.target.value
+                }
+              }
+            }),
+            _vm._v(" "),
+            _c("input", {
+              directives: [
+                {
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.tahun_ajaran_id,
+                  expression: "tahun_ajaran_id"
+                }
+              ],
+              attrs: { type: "hidden" },
+              domProps: { value: _vm.tahun_ajaran_id },
+              on: {
+                input: function($event) {
+                  if ($event.target.composing) {
+                    return
+                  }
+                  _vm.tahun_ajaran_id = $event.target.value
+                }
+              }
+            }),
+            _vm._v(" "),
             _c(
               "b-button",
               {
@@ -15784,14 +15873,57 @@ var render = function() {
                     expression: "success"
                   }
                 ],
-                attrs: { block: "", variant: "primary" },
+                attrs: { block: "", variant: "primary", disabled: _vm.isKirim },
                 on: {
                   click: function($event) {
                     return _vm.kirimData()
                   }
                 }
               },
-              [_vm._v("Kirim Data Dapodik ke eRapor SMK")]
+              [
+                _c("b-spinner", {
+                  directives: [
+                    {
+                      name: "show",
+                      rawName: "v-show",
+                      value: _vm.isKirim,
+                      expression: "isKirim"
+                    }
+                  ],
+                  attrs: { small: "", type: "grow" }
+                }),
+                _vm._v(" "),
+                _c(
+                  "span",
+                  {
+                    directives: [
+                      {
+                        name: "show",
+                        rawName: "v-show",
+                        value: !_vm.isKirim,
+                        expression: "!isKirim"
+                      }
+                    ]
+                  },
+                  [_vm._v("Kirim Data Dapodik ke eRapor SMK")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "span",
+                  {
+                    directives: [
+                      {
+                        name: "show",
+                        rawName: "v-show",
+                        value: _vm.isKirim,
+                        expression: "isKirim"
+                      }
+                    ]
+                  },
+                  [_vm._v("Memproses Kirim Data Dapodik ke eRapor SMK...")]
+                )
+              ],
+              1
             )
           ],
           1
@@ -15884,6 +16016,18 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -15899,7 +16043,7 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       title: window.config.appName,
-      selected: null,
+      sekolah_id: null,
       url: null,
       options: [{
         value: null,
@@ -15910,9 +16054,14 @@ __webpack_require__.r(__webpack_exports__);
       }],
       success: false,
       danger: false,
-      success_text: '',
-      danger_text: '',
-      isReadOnly: false
+      success_text: null,
+      danger_text: null,
+      isReadOnly: false,
+      semester_id: null,
+      tahun_ajaran_id: null,
+      polling: null,
+      isKirim: false,
+      isTesKoneksi: false
     };
   },
   computed: Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])({
@@ -15923,7 +16072,9 @@ __webpack_require__.r(__webpack_exports__);
       var _this = this;
 
       axios__WEBPACK_IMPORTED_MODULE_1___default.a.post("/api/dapodik/cek-koneksi", {
-        sekolah_id: this.selected,
+        sekolah_id: this.sekolah_id,
+        semester_id: this.semester_id,
+        tahun_ajaran_id: this.tahun_ajaran_id,
         url: this.url
       }).then(function (response) {
         var getData = response.data.data;
@@ -15941,27 +16092,44 @@ __webpack_require__.r(__webpack_exports__);
           _this.danger = true;
           _this.danger_text = 'Koneksi ke aplikasi eRapor SMK gagal. Silahkan periksa kembali URL eRapor SMK';
         }
+
+        _this.isTesKoneksi = true;
       });
     },
     kirimData: function kirimData() {
+      var _this2 = this;
+
+      this.isKirim = true;
+      this.polling = setInterval(function () {
+        axios__WEBPACK_IMPORTED_MODULE_1___default.a.get('api/dapodik/hitung').then(function (response) {
+          var getData = response.data;
+          _this2.success_text = getData.data;
+        });
+      }, 1000);
       axios__WEBPACK_IMPORTED_MODULE_1___default.a.post("/api/dapodik/kirim-data", {
-        sekolah_id: this.selected,
+        sekolah_id: this.sekolah_id,
+        semester_id: this.semester_id,
+        tahun_ajaran_id: this.tahun_ajaran_id,
         url: this.url
       }).then(function (response) {
-        var getData = response.data.data;
+        clearInterval(_this2.polling);
+        _this2.isKirim = false;
+        var getData = response.data;
+        _this2.success_text = null;
         console.log(getData);
+        _this2.success_text = getData.data;
       });
     },
     loadPostsData: function loadPostsData() {
-      var _this2 = this;
+      var _this3 = this;
 
       axios__WEBPACK_IMPORTED_MODULE_1___default.a.post("/api/dapodik/sekolah").then(function (response) {
         var tempData = [{
           value: null,
           text: 'Pilih Sekolah'
         }];
-        var getData = response.data.data;
-        getData.forEach(myFunction);
+        var getData = response.data;
+        getData.data.forEach(myFunction);
 
         function myFunction(item) {
           var a = {};
@@ -15970,7 +16138,10 @@ __webpack_require__.r(__webpack_exports__);
           tempData.push(a);
         }
 
-        _this2.options = tempData;
+        _this3.options = tempData;
+        _this3.semester_id = getData.semester.semester_id;
+        _this3.tahun_ajaran_id = getData.semester.tahun_ajaran_id;
+        console.log(getData.semester);
       });
     }
   }

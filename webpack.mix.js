@@ -8,7 +8,7 @@ mix
   .js('resources/js/app.js', 'public/dist/js')
   .sass('resources/sass/app.scss', 'public/dist/css')
   .version()
-  .disableNotifications()
+  //.disableNotifications()
 
 if (mix.inProduction()) {
   mix
@@ -16,7 +16,7 @@ if (mix.inProduction()) {
     // .version() // Use `laravel-mix-versionhash` for the generating correct Laravel Mix manifest file.
     .versionHash()
 } else {
-  mix.sourceMaps()
+  //mix.sourceMaps()
 }
 
 mix.webpackConfig({
