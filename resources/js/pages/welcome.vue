@@ -61,7 +61,7 @@ export default {
     this.loadPostsData()
   },
   metaInfo () {
-    return { title: 'Beranda' }
+    return { title: null }
   },
 
   data: () => ({
@@ -89,6 +89,7 @@ export default {
   }),
   methods: {
     tesKoneksi(){
+      this.isTesKoneksi = true
       axios.post(`/api/dapodik/cek-koneksi`, {
         sekolah_id : this.sekolah_id,
         semester_id: this.semester_id,
@@ -110,7 +111,7 @@ export default {
           this.danger = true
           this.danger_text = 'Koneksi ke aplikasi eRapor SMK gagal. Silahkan periksa kembali URL eRapor SMK'
         }
-        this.isTesKoneksi = true
+        this.isTesKoneksi = false
       })
     },
     kirimData(){
@@ -169,6 +170,6 @@ export default {
 }
 
 .title {
-  font-size: 85px;
+  font-size: 75px;
 }
 </style>

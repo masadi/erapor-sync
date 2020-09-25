@@ -179,7 +179,7 @@ class DapodikController extends Controller
         //dudi
     }
     public function get_wilayah(){
-        $data = Wilayah::whereRaw('last_sync = last_update')->orderBy('id_level_wilayah')->get();
+        $data = Wilayah::whereRaw('last_sync > last_update')->orderBy('id_level_wilayah')->get();
         return $data;
     }
     public function get_sekolah($request, $internal = 0){
