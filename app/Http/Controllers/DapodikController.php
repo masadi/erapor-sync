@@ -52,7 +52,7 @@ class DapodikController extends Controller
         return response()->json(['status' => 'success', 'data' => $text]);
     }
     public function kirim_data(Request $request){
-        Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Sedang mengirim data Referensi Wilayah']));
+        /*Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Sedang mengirim data Referensi Wilayah']));
         $all_data = $this->get_wilayah();
         $response = Http::post($request->url.'/api/dapodik/kirim-data', [
             'sekolah_id' => $request->sekolah_id,
@@ -82,7 +82,7 @@ class DapodikController extends Controller
             'tahun_ajaran_id' => $request->tahun_ajaran_id,
             'data' => HelperModel::prepare_send(json_encode($all_data)),
             'permintaan' => 'mapel_kur',
-        ]);
+        ]);*/
         Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Sedang mengirim data sekolah']));
         $all_data = $this->get_sekolah($request, 1);
         $response = Http::post($request->url.'/api/dapodik/kirim-data', [
@@ -164,19 +164,8 @@ class DapodikController extends Controller
             'data' => HelperModel::prepare_send(json_encode($all_data)),
             'permintaan' => 'dudi',
         ]);
+        Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Kirim data Dapodik ke Aplikasi eRapor SMK selesai!']));
         return response()->json(['status' => 'success', 'data' => 'Kirim data Dapodik ke Aplikasi eRapor SMK selesai!', 'response' => json_decode($response->body())]);
-        //jurusan
-        //kurikulum
-        //mata_pelajaran
-        //mata_pelajaran_kurikulum
-        //ptk
-        //rombongan_belajar
-        //peserta_didik_aktif
-        //peserta_didik_keluar
-        //pembelajaran
-        //ekstrakurikuler
-        //anggota_ekskul
-        //dudi
     }
     public function get_wilayah(){
         $data = Wilayah::whereRaw('last_sync > last_update')->orderBy('id_level_wilayah')->get();
@@ -215,7 +204,7 @@ class DapodikController extends Controller
             $query->with(['ptk.wilayah.parrentRecursive']);
         }])->find($request->sekolah_id);
         if($internal){
-            return $data;
+            return $data->toArray();
         }
         return response()->json(['error' => FALSE, 'dapodik' => $data]);
     }
@@ -269,7 +258,7 @@ class DapodikController extends Controller
         $data = Peserta_didik::where(function($query) use ($callback, $callback_anggota, $request){
             $query->whereHas('registrasi_peserta_didik', $callback);
             $query->whereHas('anggota_rombel', $callback_anggota);
-        })->with(['anggota_rombel' => $callback_anggota, 'registrasi_peserta_didik' => $callback, 'wilayah.parrentRecursive']);
+        })->with(['anggota_rombel' => $callback_anggota, 'anggota_rombel.rombongan_belajar', 'registrasi_peserta_didik' => $callback, 'wilayah.parrentRecursive']);
         $data = $data->get();
         if($internal){
             return $data;
