@@ -35,7 +35,9 @@ class DapodikController extends Controller
         return response()->json(['status' => 'success', 'data' => $all_data, 'semester' => $semester]);
     }
     public function cek_koneksi(Request $request){
-        $response = Http::post($request->url.'/api/dapodik/cek-koneksi', [
+        $response = Http::withOptions([
+            'verify' => false,
+        ])->post($request->url.'/api/dapodik/cek-koneksi', [
             'sekolah_id' => $request->sekolah_id,
         ]);
         $all_data = $request->all();
@@ -54,7 +56,9 @@ class DapodikController extends Controller
     public function kirim_data(Request $request){
         Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Sedang mengirim data Referensi Wilayah']));
         $all_data = $this->get_wilayah();
-        $response = Http::post($request->url.'/api/dapodik/kirim-data', [
+        $response = Http::withOptions([
+            'verify' => false,
+        ])->post($request->url.'/api/dapodik/kirim-data', [
             'sekolah_id' => $request->sekolah_id,
             'semester_id' => $request->semester_id,
             'tahun_ajaran_id' => $request->tahun_ajaran_id,
@@ -67,7 +71,9 @@ class DapodikController extends Controller
         $all_data = $this->get_kurikulum($request, 1);
         Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Sedang mengirim data Referensi Mata Pelajaran']));
         $all_data = $this->get_mata_pelajaran($request, 1);
-        $response = Http::post($request->url.'/api/dapodik/kirim-data', [
+        $response = Http::withOptions([
+            'verify' => false,
+        ])->post($request->url.'/api/dapodik/kirim-data', [
             'sekolah_id' => $request->sekolah_id,
             'semester_id' => $request->semester_id,
             'tahun_ajaran_id' => $request->tahun_ajaran_id,
@@ -76,7 +82,9 @@ class DapodikController extends Controller
         ]);
         Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Sedang mengirim data Referensi Mata Pelajaran Kurikulum']));
         $all_data = $this->get_mata_pelajaran_kurikulum($request, 1);
-        $response = Http::post($request->url.'/api/dapodik/kirim-data', [
+        $response = Http::withOptions([
+            'verify' => false,
+        ])->post($request->url.'/api/dapodik/kirim-data', [
             'sekolah_id' => $request->sekolah_id,
             'semester_id' => $request->semester_id,
             'tahun_ajaran_id' => $request->tahun_ajaran_id,
@@ -85,7 +93,9 @@ class DapodikController extends Controller
         ]);
         Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Sedang mengirim data sekolah']));
         $all_data = $this->get_sekolah($request, 1);
-        $response = Http::post($request->url.'/api/dapodik/kirim-data', [
+        $response = Http::withOptions([
+            'verify' => false,
+        ])->post($request->url.'/api/dapodik/kirim-data', [
             'sekolah_id' => $request->sekolah_id,
             'semester_id' => $request->semester_id,
             'tahun_ajaran_id' => $request->tahun_ajaran_id,
@@ -94,7 +104,9 @@ class DapodikController extends Controller
         ]);
         Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Sedang mengirim data PTK']));
         $all_data = $this->get_ptk($request, 1);
-        $response = Http::post($request->url.'/api/dapodik/kirim-data', [
+        $response = Http::withOptions([
+            'verify' => false,
+        ])->post($request->url.'/api/dapodik/kirim-data', [
             'sekolah_id' => $request->sekolah_id,
             'semester_id' => $request->semester_id,
             'tahun_ajaran_id' => $request->tahun_ajaran_id,
@@ -103,7 +115,9 @@ class DapodikController extends Controller
         ]);
         Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Sedang mengirim data Rombongan Belajar']));
         $all_data = $this->get_rombongan_belajar($request, 1);
-        $response = Http::post($request->url.'/api/dapodik/kirim-data', [
+        $response = Http::withOptions([
+            'verify' => false,
+        ])->post($request->url.'/api/dapodik/kirim-data', [
             'sekolah_id' => $request->sekolah_id,
             'semester_id' => $request->semester_id,
             'tahun_ajaran_id' => $request->tahun_ajaran_id,
@@ -112,7 +126,9 @@ class DapodikController extends Controller
         ]);
         Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Sedang mengirim data Peserta Didik Aktif']));
         $all_data = $this->get_peserta_didik($request, 1);
-        $response = Http::post($request->url.'/api/dapodik/kirim-data', [
+        $response = Http::withOptions([
+            'verify' => false,
+        ])->post($request->url.'/api/dapodik/kirim-data', [
             'sekolah_id' => $request->sekolah_id,
             'semester_id' => $request->semester_id,
             'tahun_ajaran_id' => $request->tahun_ajaran_id,
@@ -121,7 +137,9 @@ class DapodikController extends Controller
         ]);
         Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Sedang mengirim data Peserta Didik Keluar']));
         $all_data = $this->get_peserta_didik($request->all() + ['keluar' => 1], 1);
-        $response = Http::post($request->url.'/api/dapodik/kirim-data', [
+        $response = Http::withOptions([
+            'verify' => false,
+        ])->post($request->url.'/api/dapodik/kirim-data', [
             'sekolah_id' => $request->sekolah_id,
             'semester_id' => $request->semester_id,
             'tahun_ajaran_id' => $request->tahun_ajaran_id,
@@ -130,7 +148,9 @@ class DapodikController extends Controller
         ]);
         Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Sedang mengirim data Pembelajaran']));
         $all_data = $this->get_pembelajaran($request, 1);
-        $response = Http::post($request->url.'/api/dapodik/kirim-data', [
+        $response = Http::withOptions([
+            'verify' => false,
+        ])->post($request->url.'/api/dapodik/kirim-data', [
             'sekolah_id' => $request->sekolah_id,
             'semester_id' => $request->semester_id,
             'tahun_ajaran_id' => $request->tahun_ajaran_id,
@@ -139,7 +159,9 @@ class DapodikController extends Controller
         ]);
         Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Sedang mengirim data Ekstrakurikuler']));
         $all_data = $this->get_ekskul($request, 1);
-        $response = Http::post($request->url.'/api/dapodik/kirim-data', [
+        $response = Http::withOptions([
+            'verify' => false,
+        ])->post($request->url.'/api/dapodik/kirim-data', [
             'sekolah_id' => $request->sekolah_id,
             'semester_id' => $request->semester_id,
             'tahun_ajaran_id' => $request->tahun_ajaran_id,
@@ -148,7 +170,9 @@ class DapodikController extends Controller
         ]);
         Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Sedang mengirim data Anggota Ekskul']));
         $all_data = $this->get_anggota_ekskul($request, 1);
-        $response = Http::post($request->url.'/api/dapodik/kirim-data', [
+        $response = Http::withOptions([
+            'verify' => false,
+        ])->post($request->url.'/api/dapodik/kirim-data', [
             'sekolah_id' => $request->sekolah_id,
             'semester_id' => $request->semester_id,
             'tahun_ajaran_id' => $request->tahun_ajaran_id,
@@ -157,7 +181,9 @@ class DapodikController extends Controller
         ]);
         Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Sedang mengirim data DUDI']));
         $all_data = $this->get_dudi($request, 1);
-        $response = Http::post($request->url.'/api/dapodik/kirim-data', [
+        $response = Http::withOptions([
+            'verify' => false,
+        ])->post($request->url.'/api/dapodik/kirim-data', [
             'sekolah_id' => $request->sekolah_id,
             'semester_id' => $request->semester_id,
             'tahun_ajaran_id' => $request->tahun_ajaran_id,
