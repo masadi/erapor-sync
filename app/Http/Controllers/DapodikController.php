@@ -225,6 +225,7 @@ class DapodikController extends Controller
     public function get_ptk($request, $internal = 0){
         $callback = function($query) use ($request){
             $query->where('sekolah_id', $request->sekolah_id);
+            $query->whereNull('jenis_keluar_id');
         };
         $data = Ptk::whereHas('ptk_terdaftar', $callback)->with(['ptk_terdaftar' => $callback, 'wilayah.parrentRecursive', 'rwy_pend_formal' => function($query){
             $query->where('gelar_akademik_id', '<>', 99999);
