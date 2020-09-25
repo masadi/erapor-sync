@@ -52,7 +52,7 @@ class DapodikController extends Controller
         return response()->json(['status' => 'success', 'data' => $text]);
     }
     public function kirim_data(Request $request){
-        /*Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Sedang mengirim data Referensi Wilayah']));
+        Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Sedang mengirim data Referensi Wilayah']));
         $all_data = $this->get_wilayah();
         $response = Http::post($request->url.'/api/dapodik/kirim-data', [
             'sekolah_id' => $request->sekolah_id,
@@ -82,7 +82,7 @@ class DapodikController extends Controller
             'tahun_ajaran_id' => $request->tahun_ajaran_id,
             'data' => HelperModel::prepare_send(json_encode($all_data)),
             'permintaan' => 'mapel_kur',
-        ]);*/
+        ]);
         Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Sedang mengirim data sekolah']));
         $all_data = $this->get_sekolah($request, 1);
         $response = Http::post($request->url.'/api/dapodik/kirim-data', [
@@ -172,18 +172,6 @@ class DapodikController extends Controller
         return $data;
     }
     public function get_sekolah($request, $internal = 0){
-        //dd($request->all());
-        /*
-        SMKS DEWI SARTIKA	20606817
-        SMKN 7 TANGERANG	20615542
-        SMKS AMANAH	20616385
-        SMKS PRUDENT SCHOOL	20606893
-        SD NEGERI SANGIANG JAYA	20606475
-        SMP ISLAM ABABIYL	20606720
-        SMAS DAAN MOGOT	20606525
-        SMAS ISLAMIC CENTRE	20606501
-        SMP DAAN MOGOT	20606875
-        */
         $data = Sekolah::with(['wilayah.parrentRecursive', 'jurusan_sp', 'ptk_terdaftar' => function($query) use ($request){
             $query->whereHas('ptk', function($query){
                 $query->where('jenis_ptk_id',20);
