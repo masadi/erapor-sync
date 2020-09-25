@@ -191,7 +191,7 @@ class DapodikController extends Controller
             'permintaan' => 'dudi',
         ]);
         Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Kirim data Dapodik ke Aplikasi eRapor SMK selesai!']));
-        return response()->json(['status' => 'success', 'data' => 'Kirim data Dapodik ke Aplikasi eRapor SMK selesai!', 'response' => json_decode($response->body())]);
+        return response()->json(['status' => 'success', 'data' => 'Kirim data Dapodik ke Aplikasi eRapor SMK selesai!', 'response' => json_decode($response->body()), 'all_data' => $all_data]);
     }
     public function get_wilayah(){
         $data = Wilayah::whereRaw('last_sync > last_update')->orderBy('id_level_wilayah')->get();
