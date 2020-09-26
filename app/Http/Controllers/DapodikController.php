@@ -135,6 +135,17 @@ class DapodikController extends Controller
             'data' => HelperModel::prepare_send(json_encode($all_data)),
             'permintaan' => 'siswa_aktif',
         ]);
+        Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Mengirim kelengkapan data Peserta Didik Aktif']));
+        $all_data = $this->get_kelengkapan_data($request, 1);
+        $response = Http::withOptions([
+            'verify' => false,
+        ])->post($request->url.'/api/dapodik/kirim-data', [
+            'sekolah_id' => $request->sekolah_id,
+            'semester_id' => $request->semester_id,
+            'tahun_ajaran_id' => $request->tahun_ajaran_id,
+            'data' => HelperModel::prepare_send(json_encode($all_data)),
+            'permintaan' => 'kelengkapan_data',
+        ]);
         Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Mengirim data Peserta Didik Keluar']));
         $all_data = $this->get_peserta_didik($request->all() + ['keluar' => 1], 1);
         $response = Http::withOptions([
@@ -195,6 +206,22 @@ class DapodikController extends Controller
     }
     public function get_wilayah(){
         $data = Wilayah::whereRaw('last_sync > last_update')->orderBy('id_level_wilayah')->get();
+        return $data;
+    }
+    public function get_kelengkapan_data($request, $internal = 0){
+        $callback_rombel = function($query) use ($request){
+            $query->where('sekolah_id', $request->sekolah_id);
+            $query->where('semester_id', $request->semester_id);
+            $query->whereIn('jenis_rombel', [1,8,9]);
+            $query->whereHas('ptk');
+        };
+        $data = Anggota_rombel::where(function($query) use ($request, $callback_rombel){
+            $query->where('jenis_pendaftaran_id', 1);
+            $query->whereHas('rombongan_belajar', $callback_rombel);
+        })->orWhere(function($query) use ($request, $callback_rombel){
+            $query->where('jenis_pendaftaran_id', 2);
+            $query->whereHas('rombongan_belajar', $callback_rombel);
+        })->with(['rombongan_belajar' => $callback_rombel, 'peserta_didik'])->get();
         return $data;
     }
     public function get_sekolah($request, $internal = 0){
