@@ -24,7 +24,6 @@ use Illuminate\Support\Facades\Storage;
 class DapodikController extends Controller
 {
     public function sekolah(Request $request){
-        $all_data = Sekolah::where('bentuk_pendidikan_id', 15)->where('soft_delete', 0)->get();
         $semester = Semester::where(function($query){
             $query->whereHas('tahun_ajaran', function($query){
                 $query->where('periode_aktif', 1);
@@ -32,6 +31,13 @@ class DapodikController extends Controller
             $query->where('periode_aktif', 1);
             $query->whereNull('expired_date');
         })->first();
+        $all_data = Sekolah::where(function($query) use ($semester){
+            $query->whereHas('sekolah_longitudinal', function($query) use ($semester){
+                $query->where('semester_id', $semester->semester_id);
+            });
+            $query->where('bentuk_pendidikan_id', 15);
+            //$query->where('soft_delete', 0);
+        })->get();
         return response()->json(['status' => 'success', 'data' => $all_data, 'semester' => $semester]);
     }
     public function cek_koneksi(Request $request){

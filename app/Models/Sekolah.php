@@ -28,4 +28,7 @@ class Sekolah extends Model
     public function wilayah(){
         return $this->hasOne('App\Models\Wilayah', 'kode_wilayah', 'kode_wilayah');
     }
+    public function sekolah_longitudinal(){
+        return $this->hasOne('App\Models\Sekolah_longitudinal', 'sekolah_id', 'sekolah_id');
+    }
 }
