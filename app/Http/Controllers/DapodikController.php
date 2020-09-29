@@ -336,7 +336,7 @@ class DapodikController extends Controller
                 $query->where('semester_id', $request->semester_id);
                 $query->whereHas('ptk');
             });
-        })->with(['rombongan_belajar']);
+        })->with(['rombongan_belajar.ruang']);
         $data = $data->get();
         if($internal){
             return $data;

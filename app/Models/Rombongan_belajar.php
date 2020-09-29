@@ -20,4 +20,7 @@ class Rombongan_belajar extends Model
     public function jurusan_sp(){
         return $this->hasOne('App\Models\Jurusan_sp', 'jurusan_sp_id', 'jurusan_sp_id');
     }
+    public function ruang(){
+        return $this->hasOne('App\Models\Ruang', 'id_ruang', 'id_ruang');
+    }
 }
