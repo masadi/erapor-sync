@@ -21,7 +21,7 @@
         {{ title }} v.1.0.0
       </div>
       <div class="form-group">
-        <b-form-select v-model="sekolah_id" :options="options" v-bind:disabled="isReadOnly"></b-form-select>
+        <b-form-select v-model="selected" :options="options" v-bind:disabled="isReadOnly"></b-form-select>
       </div>
       <div class="form-group">
         <b-input-group>
@@ -36,6 +36,9 @@
           </b-input-group-append>
         </b-input-group>
       </div>
+      <div class="form-group" v-show="danger">
+        <b-form-input v-bind:readonly="isReadOnly" v-model="token" placeholder="Paste disini token Web Service Dapodik"></b-form-input>
+      </div>
       <div class="form-group">
         <input v-model="semester_id" type="hidden">
         <input v-model="tahun_ajaran_id" type="hidden">
@@ -44,6 +47,11 @@
           <b-spinner v-show="isKirim" small type="grow"></b-spinner>
           <span v-show="!isKirim">Kirim Data Dapodik ke eRapor SMK</span>
           <span v-show="isKirim">Memproses Kirim Data Dapodik ke eRapor SMK...</span>
+        </b-button>
+        <b-button block variant="warning" v-show="tombol_register" v-on:click="register()" v-bind:disabled="isRegister">
+          <b-spinner v-show="isRegister" small type="grow"></b-spinner>
+          <span v-show="!isRegister">Registrasi Pengguna eRapor SMK</span>
+          <span v-show="isRegister">Memproses Registrasi eRapor SMK...</span>
         </b-button>
       </div>
       <b-alert show variant="success" v-show="success">{{success_text}}</b-alert>
@@ -66,22 +74,26 @@ export default {
 
   data: () => ({
     title: window.config.appName,
-    sekolah_id: null,
+    selected: {sekolah_id: null, npsn: null},
     url: null,
     options: [
-      { value: null, text: 'Pilih NPSN' },
-      { value: 'a', text: 'This is option a' },
+      { value: {sekolah_id: null, npsn: null}, text: 'Pilih Sekolah' }
     ],
     success: false,
     danger: false,
+    tombol_register: false,
     success_text: null,
     danger_text: null,
     isReadOnly: false,
     semester_id: null,
     tahun_ajaran_id: null,
+    npsn: null,
+    sekolah_id: null,
     polling: null,
     isKirim: false,
+    isRegister: false,
     isTesKoneksi: false,
+    token: null,
   }),
 
   computed: mapGetters({
@@ -91,7 +103,8 @@ export default {
     tesKoneksi(){
       this.isTesKoneksi = true
       axios.post(`/api/dapodik/cek-koneksi`, {
-        sekolah_id : this.sekolah_id,
+        sekolah_id : this.selected.sekolah_id,
+        npsn : this.selected.npsn,
         semester_id: this.semester_id,
         tahun_ajaran_id: this.tahun_ajaran_id,
         url : this.url,
@@ -104,14 +117,38 @@ export default {
             this.success_text = 'Data Sekolah ditemukan di aplikasi eRapor SMK. Silahkan klik tombol di atas untuk mengirim data Dapodik ke aplikasi eRapor SMK'
             this.isReadOnly = true
           } else {
+            this.tombol_register = true
             this.danger = true
-            this.danger_text = 'Data Sekolah tidak ditemukan di aplikasi eRapor SMK'
+            this.danger_text = 'Data Sekolah tidak ditemukan di aplikasi eRapor SMK. Silahkan klik tombol diatas untuk melakukan registrasi aplikasi eRapor SMK.'
           }
         } else {
           this.danger = true
           this.danger_text = 'Koneksi ke aplikasi eRapor SMK gagal. Silahkan periksa kembali URL eRapor SMK'
         }
         this.isTesKoneksi = false
+      })
+    },
+    register(){
+      this.isRegister = true
+      axios.post(`/api/dapodik/registrasi`, {
+        token: this.token,
+        sekolah_id : this.selected.sekolah_id,
+        npsn : this.selected.npsn,
+        semester_id: this.semester_id,
+        tahun_ajaran_id: this.tahun_ajaran_id,
+        url : this.url,
+      })
+      .then((response) => {
+        this.isRegister = false
+        let getData = response.data
+        if(getData.response_erapor){
+          this.isReadOnly = true
+          this.success = true
+          this.success_text = 'Registrasi Pengguna eRapor SMK berhasil. Silahkan klik tombol di atas untuk mengirim data Dapodik ke aplikasi eRapor SMK'
+          this.tombol_register = false
+          this.danger_text = null
+          this.danger = false
+        }
       })
     },
     kirimData(){
@@ -124,7 +161,7 @@ export default {
         })
       }, 1000)
       axios.post(`/api/dapodik/kirim-data`, {
-        sekolah_id : this.sekolah_id,
+        sekolah_id : this.selected.sekolah_id,
         semester_id: this.semester_id,
         tahun_ajaran_id: this.tahun_ajaran_id,
         url : this.url,
@@ -142,20 +179,22 @@ export default {
       axios.post(`/api/dapodik/sekolah`)
       .then((response) => {
         var tempData = [
-          { value: null, text: 'Pilih Sekolah' }
+          { value: {sekolah_id: null, npsn: null}, text: 'Pilih Sekolah' }
         ];
         let getData = response.data
         getData.data.forEach(myFunction)
+        //var a = { value: {sekolah_id: null, npsn: null}, text: 'Pilih Sekolah' }
         function myFunction(item) {
           var a = {};
-          a.value = item.sekolah_id
+          a.value = {sekolah_id: item.sekolah_id, npsn:item.npsn}
+          //a.value = {sekolah_id: item.sekolah_id}
           a.text = item.nama
           tempData.push(a)
         }
         this.options = tempData
         this.semester_id = getData.semester.semester_id
         this.tahun_ajaran_id = getData.semester.tahun_ajaran_id
-        console.log(getData.semester);
+        console.log(this.options);
       })
     }
   }

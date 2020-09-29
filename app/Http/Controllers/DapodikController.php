@@ -20,7 +20,9 @@ use App\Models\Tahun_ajaran;
 use App\Models\Semester;
 use App\Models\Wilayah;
 use App\HelperModel;
+use App\Helpers\Encrypt;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Cookie;
 class DapodikController extends Controller
 {
     public function sekolah(Request $request){
@@ -46,8 +48,57 @@ class DapodikController extends Controller
         ])->post($request->url.'/api/dapodik/cek-koneksi', [
             'sekolah_id' => $request->sekolah_id,
         ]);
-        $all_data = $request->all();
-        return response()->json(['status' => 'success', 'data' => json_decode($response->body())]);
+        if($response->successful()){
+            $all_data = $response->json();
+        } else {
+            $all_data = ['status' => 'failed', 'data' => NULL];
+        }
+        //http://localhost:5774/rest/Pengguna?_dc=1601393946024&sekolah_id=d7b059e8-7141-4860-8161-3e8e7adfae7c&peran_id=10&aktif=%23IN0%2C1&callback=ptkgrid&page=1&start=0&limit=50
+        return response()->json(['status' => 'success', 'data' => $all_data]);
+    }
+    public function registrasi(Request $request){
+        $response = Http::withOptions([
+            'verify' => false,
+        ])->withToken($request->token)->get('http://localhost:5774/WebService/getPengguna?npsn='.$request->npsn);
+        //$all_data = json_decode($response->body());
+        if($response->successful()){
+            $all_user = $response->json();
+            $encrypt = new Encrypt();
+            foreach($all_user['rows'] as $user){
+                $user = (object) $user;
+                if($user->peran_id_str == 'Operator Sekolah' && $user->password){
+                    $encrypt->setString($user->password);
+                    $pengguna[] = [
+                        'sekolah_id' => $user->sekolah_id,
+                        'name' => $user->nama,
+                        'email' => $user->username,
+                        'password' => $encrypt->doDecrypt(),
+                        'password_dapo' => $user->password,
+                    ];
+                }
+            }
+            $all_data = [
+                'sekolah' => $this->get_sekolah($request, 1),
+                'pengguna' => $pengguna,
+            ];
+            //dd($all_data['pengguna']);
+            $response = Http::withOptions([
+                'verify' => false,
+            ])->post($request->url.'/api/dapodik/kirim-data', [
+                'sekolah_id' => $request->sekolah_id,
+                'semester_id' => $request->semester_id,
+                'tahun_ajaran_id' => $request->tahun_ajaran_id,
+                'data' => HelperModel::prepare_send(json_encode($all_data)),
+                'permintaan' => 'registrasi',
+            ]);
+            if($response->successful()){
+                return response()->json(['status' => 'success', 'data' => $all_data, 'response_erapor' => $response->json()]);
+            } else {
+                return response()->json(['status' => 'success', 'data' => $all_data, 'response_erapor' => NULL]);
+            }
+        } else {
+            $all_data = NULL;
+        }
     }
     public function hitung(){
         if(Storage::disk('public')->exists('kirim_data.json')){
@@ -251,7 +302,7 @@ class DapodikController extends Controller
             $query->with(['ptk.wilayah.parrentRecursive']);
         }])->find($request->sekolah_id);
         if($internal){
-            return $data->toArray();
+            return ($data) ? $data->toArray() : NULL;
         }
         return response()->json(['error' => FALSE, 'dapodik' => $data]);
     }

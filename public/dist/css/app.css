@@ -15711,11 +15711,11 @@ var render = function() {
             _c("b-form-select", {
               attrs: { options: _vm.options, disabled: _vm.isReadOnly },
               model: {
-                value: _vm.sekolah_id,
+                value: _vm.selected,
                 callback: function($$v) {
-                  _vm.sekolah_id = $$v
+                  _vm.selected = $$v
                 },
-                expression: "sekolah_id"
+                expression: "selected"
               }
             })
           ],
@@ -15812,6 +15812,37 @@ var render = function() {
               ],
               1
             )
+          ],
+          1
+        ),
+        _vm._v(" "),
+        _c(
+          "div",
+          {
+            directives: [
+              {
+                name: "show",
+                rawName: "v-show",
+                value: _vm.danger,
+                expression: "danger"
+              }
+            ],
+            staticClass: "form-group"
+          },
+          [
+            _c("b-form-input", {
+              attrs: {
+                readonly: _vm.isReadOnly,
+                placeholder: "Paste disini token Web Service Dapodik"
+              },
+              model: {
+                value: _vm.token,
+                callback: function($$v) {
+                  _vm.token = $$v
+                },
+                expression: "token"
+              }
+            })
           ],
           1
         ),
@@ -15924,6 +15955,74 @@ var render = function() {
                 )
               ],
               1
+            ),
+            _vm._v(" "),
+            _c(
+              "b-button",
+              {
+                directives: [
+                  {
+                    name: "show",
+                    rawName: "v-show",
+                    value: _vm.tombol_register,
+                    expression: "tombol_register"
+                  }
+                ],
+                attrs: {
+                  block: "",
+                  variant: "warning",
+                  disabled: _vm.isRegister
+                },
+                on: {
+                  click: function($event) {
+                    return _vm.register()
+                  }
+                }
+              },
+              [
+                _c("b-spinner", {
+                  directives: [
+                    {
+                      name: "show",
+                      rawName: "v-show",
+                      value: _vm.isRegister,
+                      expression: "isRegister"
+                    }
+                  ],
+                  attrs: { small: "", type: "grow" }
+                }),
+                _vm._v(" "),
+                _c(
+                  "span",
+                  {
+                    directives: [
+                      {
+                        name: "show",
+                        rawName: "v-show",
+                        value: !_vm.isRegister,
+                        expression: "!isRegister"
+                      }
+                    ]
+                  },
+                  [_vm._v("Registrasi Pengguna eRapor SMK")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "span",
+                  {
+                    directives: [
+                      {
+                        name: "show",
+                        rawName: "v-show",
+                        value: _vm.isRegister,
+                        expression: "isRegister"
+                      }
+                    ]
+                  },
+                  [_vm._v("Memproses Registrasi eRapor SMK...")]
+                )
+              ],
+              1
             )
           ],
           1
@@ -16028,6 +16127,14 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -16043,25 +16150,33 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       title: window.config.appName,
-      sekolah_id: null,
+      selected: {
+        sekolah_id: null,
+        npsn: null
+      },
       url: null,
       options: [{
-        value: null,
-        text: 'Pilih NPSN'
-      }, {
-        value: 'a',
-        text: 'This is option a'
+        value: {
+          sekolah_id: null,
+          npsn: null
+        },
+        text: 'Pilih Sekolah'
       }],
       success: false,
       danger: false,
+      tombol_register: false,
       success_text: null,
       danger_text: null,
       isReadOnly: false,
       semester_id: null,
       tahun_ajaran_id: null,
+      npsn: null,
+      sekolah_id: null,
       polling: null,
       isKirim: false,
-      isTesKoneksi: false
+      isRegister: false,
+      isTesKoneksi: false,
+      token: null
     };
   },
   computed: Object(vuex__WEBPACK_IMPORTED_MODULE_0__["mapGetters"])({
@@ -16073,7 +16188,8 @@ __webpack_require__.r(__webpack_exports__);
 
       this.isTesKoneksi = true;
       axios__WEBPACK_IMPORTED_MODULE_1___default.a.post("/api/dapodik/cek-koneksi", {
-        sekolah_id: this.sekolah_id,
+        sekolah_id: this.selected.sekolah_id,
+        npsn: this.selected.npsn,
         semester_id: this.semester_id,
         tahun_ajaran_id: this.tahun_ajaran_id,
         url: this.url
@@ -16086,8 +16202,9 @@ __webpack_require__.r(__webpack_exports__);
             _this.success_text = 'Data Sekolah ditemukan di aplikasi eRapor SMK. Silahkan klik tombol di atas untuk mengirim data Dapodik ke aplikasi eRapor SMK';
             _this.isReadOnly = true;
           } else {
+            _this.tombol_register = true;
             _this.danger = true;
-            _this.danger_text = 'Data Sekolah tidak ditemukan di aplikasi eRapor SMK';
+            _this.danger_text = 'Data Sekolah tidak ditemukan di aplikasi eRapor SMK. Silahkan klik tombol diatas untuk melakukan registrasi aplikasi eRapor SMK.';
           }
         } else {
           _this.danger = true;
@@ -16097,52 +16214,84 @@ __webpack_require__.r(__webpack_exports__);
         _this.isTesKoneksi = false;
       });
     },
-    kirimData: function kirimData() {
+    register: function register() {
       var _this2 = this;
+
+      this.isRegister = true;
+      axios__WEBPACK_IMPORTED_MODULE_1___default.a.post("/api/dapodik/registrasi", {
+        token: this.token,
+        sekolah_id: this.selected.sekolah_id,
+        npsn: this.selected.npsn,
+        semester_id: this.semester_id,
+        tahun_ajaran_id: this.tahun_ajaran_id,
+        url: this.url
+      }).then(function (response) {
+        _this2.isRegister = false;
+        var getData = response.data;
+
+        if (getData.response_erapor) {
+          _this2.isReadOnly = true;
+          _this2.success = true;
+          _this2.success_text = 'Registrasi Pengguna eRapor SMK berhasil. Silahkan klik tombol di atas untuk mengirim data Dapodik ke aplikasi eRapor SMK';
+          _this2.tombol_register = false;
+          _this2.danger_text = null;
+          _this2.danger = false;
+        }
+      });
+    },
+    kirimData: function kirimData() {
+      var _this3 = this;
 
       this.isKirim = true;
       this.polling = setInterval(function () {
         axios__WEBPACK_IMPORTED_MODULE_1___default.a.get('api/dapodik/hitung').then(function (response) {
           var getData = response.data;
-          _this2.success_text = getData.data;
+          _this3.success_text = getData.data;
         });
       }, 1000);
       axios__WEBPACK_IMPORTED_MODULE_1___default.a.post("/api/dapodik/kirim-data", {
-        sekolah_id: this.sekolah_id,
+        sekolah_id: this.selected.sekolah_id,
         semester_id: this.semester_id,
         tahun_ajaran_id: this.tahun_ajaran_id,
         url: this.url
       }).then(function (response) {
-        clearInterval(_this2.polling);
-        _this2.isKirim = false;
+        clearInterval(_this3.polling);
+        _this3.isKirim = false;
         var getData = response.data;
-        _this2.success_text = null;
+        _this3.success_text = null;
         console.log(getData);
-        _this2.success_text = getData.data;
+        _this3.success_text = getData.data;
       });
     },
     loadPostsData: function loadPostsData() {
-      var _this3 = this;
+      var _this4 = this;
 
       axios__WEBPACK_IMPORTED_MODULE_1___default.a.post("/api/dapodik/sekolah").then(function (response) {
         var tempData = [{
-          value: null,
+          value: {
+            sekolah_id: null,
+            npsn: null
+          },
           text: 'Pilih Sekolah'
         }];
         var getData = response.data;
-        getData.data.forEach(myFunction);
+        getData.data.forEach(myFunction); //var a = { value: {sekolah_id: null, npsn: null}, text: 'Pilih Sekolah' }
 
         function myFunction(item) {
           var a = {};
-          a.value = item.sekolah_id;
+          a.value = {
+            sekolah_id: item.sekolah_id,
+            npsn: item.npsn //a.value = {sekolah_id: item.sekolah_id}
+
+          };
           a.text = item.nama;
           tempData.push(a);
         }
 
-        _this3.options = tempData;
-        _this3.semester_id = getData.semester.semester_id;
-        _this3.tahun_ajaran_id = getData.semester.tahun_ajaran_id;
-        console.log(getData.semester);
+        _this4.options = tempData;
+        _this4.semester_id = getData.semester.semester_id;
+        _this4.tahun_ajaran_id = getData.semester.tahun_ajaran_id;
+        console.log(_this4.options);
       });
     }
   }
