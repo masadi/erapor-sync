@@ -103,6 +103,10 @@ class DapodikController extends Controller
             $all_data = NULL;
         }
     }
+    public function debug(Request $request){
+        $all_data = $this->get_ptk($request, 1);
+        return response()->json(['status' => 'success', 'count' => count($all_data), 'data' => $all_data]);
+    }
     public function hitung(){
         if(Storage::disk('public')->exists('kirim_data.json')){
             $data = Storage::disk('public')->get('kirim_data.json');
@@ -327,6 +331,7 @@ class DapodikController extends Controller
             $query->whereDate('last_update', '>=', $this->semester->tanggal_mulai);
             $query->where('sekolah_id', $request->sekolah_id);
             $query->whereNull('jenis_keluar_id');
+            $query->where('tahun_ajaran_id', $this->semester->tahun_ajaran_id);
         };
         $data = Ptk::whereHas('ptk_terdaftar', $callback)->with(['ptk_terdaftar' => $callback, 'wilayah.parrentRecursive', 'rwy_pend_formal' => function($query){
             $query->whereRaw('last_sync >= last_update');
