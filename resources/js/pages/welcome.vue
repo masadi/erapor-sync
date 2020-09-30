@@ -36,7 +36,7 @@
           </b-input-group-append>
         </b-input-group>
       </div>
-      <div class="form-group" v-show="danger">
+      <div class="form-group" v-show="tombol_register">
         <b-form-input v-bind:readonly="isReadOnly" v-model="token" placeholder="Paste disini token Web Service Dapodik"></b-form-input>
       </div>
       <div class="form-group">
@@ -102,19 +102,29 @@ export default {
   }),
   methods: {
     validateUrl: function() {
-      const regex = RegExp('(https?:\\/\\/)?((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|((\\d{1,3}\\.){3}\\d{1,3}))(\\:\\d+)?(\\/[-a-z\\d%_.~+@]*)*(\\?[;&a-z\\d%_.~+=-@]*)?(\\#[-a-z\\d_@]*)?$', 'i');
-      return this.url.match(regex);
+      //const regex = RegExp('(https?:\\/\\/)?((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|((\\d{1,3}\\.){3}\\d{1,3}))(\\:\\d+)?(\\/[-a-z\\d%_.~+@]*)*(\\?[;&a-z\\d%_.~+=-@]*)?(\\#[-a-z\\d_@]*)?$', 'i');
+      //return this.url.match(regex);
+      var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
+        '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+        '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+        '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+      let url;
+      try {
+        url = new URL(this.url);
+      } catch (_) {
+        return false;  
+      }
+      return url.protocol === "http:" || url.protocol === "https:";
     },
     prosesUrl(validUrl){
       if(!this.selected.sekolah_id){
         return this.showError('Sekolah tidak boleh kosong!')
       }
+      console.log(validUrl);
       if(validUrl){
-        if(typeof validUrl[1] === "undefined"){
-          return this.showError('URL eRapor SMK tidak valid. Silahkan periksa kembali!')
-        } else {
-          return this.prosesKoneksi()
-        }
+        return this.prosesKoneksi()
       } else {
         return this.showError('URL eRapor SMK tidak valid. Silahkan periksa kembali!')
       }
@@ -147,11 +157,13 @@ export default {
       })
       .then((response) => {
         let getData = response.data.data
-        if(getData){
+        console.log(getData);
+        if(getData.status == 'success'){
           if(getData.sekolah){
             this.success = true
             this.success_text = 'Data Sekolah ditemukan di aplikasi eRapor SMK. Silahkan klik tombol di atas untuk mengirim data Dapodik ke aplikasi eRapor SMK'
             this.isReadOnly = true
+            this.danger = false
           } else {
             this.tombol_register = true
             this.danger = true
@@ -159,7 +171,7 @@ export default {
           }
         } else {
           this.danger = true
-          this.danger_text = 'Koneksi ke aplikasi eRapor SMK gagal. Silahkan periksa kembali URL eRapor SMK'
+          this.danger_text = 'Koneksi ke aplikasi eRapor SMK gagal. Pastikan aplikasi eRapor SMK sudah memakai versi 5.1.1'
         }
         this.isTesKoneksi = false
       })
