@@ -63,6 +63,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import axios from 'axios'
+import Swal from 'sweetalert2'
 export default {
   layout: 'basic',
   created() {
@@ -100,7 +101,42 @@ export default {
     authenticated: 'auth/check'
   }),
   methods: {
+    validateUrl: function() {
+      const regex = RegExp('(https?:\\/\\/)?((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|((\\d{1,3}\\.){3}\\d{1,3}))(\\:\\d+)?(\\/[-a-z\\d%_.~+@]*)*(\\?[;&a-z\\d%_.~+=-@]*)?(\\#[-a-z\\d_@]*)?$', 'i');
+      return this.url.match(regex);
+    },
+    prosesUrl(validUrl){
+      if(!this.selected.sekolah_id){
+        return this.showError('Sekolah tidak boleh kosong!')
+      }
+      if(validUrl){
+        if(typeof validUrl[1] === "undefined"){
+          return this.showError('URL eRapor SMK tidak valid. Silahkan periksa kembali!')
+        } else {
+          return this.prosesKoneksi()
+        }
+      } else {
+        return this.showError('URL eRapor SMK tidak valid. Silahkan periksa kembali!')
+      }
+    },
+    showError(message){
+      Swal.fire({
+        type: 'error',
+        title: 'Gagal',
+        text: message,
+        reverseButtons: true,
+        confirmButtonText: 'Ok',
+      })
+      return false
+    },
     tesKoneksi(){
+      if(!this.url){
+        return this.showError('URL eRapor SMK tidak boleh kosong!')
+      }
+      let validUrl = this.validateUrl()
+      return this.prosesUrl(validUrl)
+    },
+    prosesKoneksi(){
       this.isTesKoneksi = true
       axios.post(`/api/dapodik/cek-koneksi`, {
         sekolah_id : this.selected.sekolah_id,

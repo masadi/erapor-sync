@@ -25,22 +25,26 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Cookie;
 class DapodikController extends Controller
 {
-    public function sekolah(Request $request){
-        $semester = Semester::where(function($query){
+    public function __construct()
+    {
+        $this->semester = Semester::where(function($query){
             $query->whereHas('tahun_ajaran', function($query){
                 $query->where('periode_aktif', 1);
             });
             $query->where('periode_aktif', 1);
             $query->whereNull('expired_date');
         })->first();
-        $all_data = Sekolah::where(function($query) use ($semester){
-            $query->whereHas('sekolah_longitudinal', function($query) use ($semester){
-                $query->where('semester_id', $semester->semester_id);
+    }
+    public function sekolah(Request $request){
+        Storage::disk('public')->delete('kirim_data.json');
+        $all_data = Sekolah::where(function($query){
+            $query->whereHas('sekolah_longitudinal', function($query){
+                $query->where('semester_id', $this->semester->semester_id);
             });
             $query->where('bentuk_pendidikan_id', 15);
             //$query->where('soft_delete', 0);
         })->get();
-        return response()->json(['status' => 'success', 'data' => $all_data, 'semester' => $semester]);
+        return response()->json(['status' => 'success', 'data' => $all_data, 'semester' => $this->semester]);
     }
     public function cek_koneksi(Request $request){
         $response = Http::withOptions([
@@ -81,7 +85,6 @@ class DapodikController extends Controller
                 'sekolah' => $this->get_sekolah($request, 1),
                 'pengguna' => $pengguna,
             ];
-            //dd($all_data['pengguna']);
             $response = Http::withOptions([
                 'verify' => false,
             ])->post($request->url.'/api/dapodik/kirim-data', [
@@ -262,12 +265,13 @@ class DapodikController extends Controller
         return response()->json(['status' => 'success', 'data' => 'Kirim data Dapodik ke Aplikasi eRapor SMK selesai!', 'response' => json_decode($response->body()), 'all_data' => $all_data]);
     }
     public function get_wilayah(){
-        $data = Wilayah::whereRaw('last_sync >= last_update')->orderBy('id_level_wilayah')->get();
+        $data = Wilayah::whereRaw('last_sync >= last_update')->whereDate('last_update', '>=', $this->semester->tanggal_mulai)->orderBy('id_level_wilayah')->get();
         return $data;
     }
     public function get_kelengkapan_data($request, $internal = 0){
         $callback_rombel = function($query) use ($request){
             $query->whereRaw('last_sync >= last_update');
+            $query->whereDate('last_update', '>=', $this->semester->tanggal_mulai);
             $query->where('sekolah_id', $request->sekolah_id);
             $query->where('semester_id', $request->semester_id);
             $query->whereIn('jenis_rombel', [1,8,9]);
@@ -275,10 +279,12 @@ class DapodikController extends Controller
         };
         $data = Anggota_rombel::where(function($query) use ($request, $callback_rombel){
             $query->whereRaw('last_sync >= last_update');
+            $query->whereDate('last_update', '>=', $this->semester->tanggal_mulai);
             $query->where('jenis_pendaftaran_id', 1);
             $query->whereHas('rombongan_belajar', $callback_rombel);
         })->orWhere(function($query) use ($request, $callback_rombel){
             $query->whereRaw('last_sync >= last_update');
+            $query->whereDate('last_update', '>=', $this->semester->tanggal_mulai);
             $query->where('jenis_pendaftaran_id', 2);
             $query->whereHas('rombongan_belajar', $callback_rombel);
         })->with(['rombongan_belajar' => $callback_rombel, 'peserta_didik'])->get();
@@ -287,8 +293,10 @@ class DapodikController extends Controller
     public function get_sekolah($request, $internal = 0){
         $data = Sekolah::with(['wilayah.parrentRecursive', 'jurusan_sp', 'ptk_terdaftar' => function($query) use ($request){
             $query->whereRaw('last_sync >= last_update');
+            $query->whereDate('last_update', '>=', $this->semester->tanggal_mulai);
             $query->whereHas('ptk', function($query){
                 $query->whereRaw('last_sync >= last_update');
+            $query->whereDate('last_update', '>=', $this->semester->tanggal_mulai);
                 $query->where('jenis_ptk_id',20);
             });
             $query->where('tahun_ajaran_id', $request->tahun_ajaran_id);
@@ -298,6 +306,7 @@ class DapodikController extends Controller
             $query->with(['ptk.wilayah']);
         }, 'tugas_tambahan' => function($query) use ($request){
             $query->whereRaw('last_sync >= last_update');
+            $query->whereDate('last_update', '>=', $this->semester->tanggal_mulai);
             $query->whereHas('ptk');
             $query->where('sekolah_id', $request->sekolah_id);
             $query->where('tst_tambahan', NULL);
@@ -315,11 +324,13 @@ class DapodikController extends Controller
     public function get_ptk($request, $internal = 0){
         $callback = function($query) use ($request){
             $query->whereRaw('last_sync >= last_update');
+            $query->whereDate('last_update', '>=', $this->semester->tanggal_mulai);
             $query->where('sekolah_id', $request->sekolah_id);
             $query->whereNull('jenis_keluar_id');
         };
         $data = Ptk::whereHas('ptk_terdaftar', $callback)->with(['ptk_terdaftar' => $callback, 'wilayah.parrentRecursive', 'rwy_pend_formal' => function($query){
             $query->whereRaw('last_sync >= last_update');
+            $query->whereDate('last_update', '>=', $this->semester->tanggal_mulai);
             $query->where('gelar_akademik_id', '<>', 99999);
 		    $query->whereNotNull('gelar_akademik_id');
         }]);
@@ -332,6 +343,7 @@ class DapodikController extends Controller
     public function get_rombongan_belajar($request, $internal = 0){
         $data = Rombongan_belajar::with(['jurusan_sp'])->where(function($query) use ($request){
             $query->whereRaw('last_sync >= last_update');
+            $query->whereDate('last_update', '>=', $this->semester->tanggal_mulai);
             $query->where('sekolah_id', $request->sekolah_id);
             $query->where('semester_id', $request->semester_id);
             $query->whereIn('jenis_rombel', [1,8,9]);
@@ -349,6 +361,7 @@ class DapodikController extends Controller
         }
         $callback = function($query) use ($request){
             $query->whereRaw('last_sync >= last_update');
+            $query->whereDate('last_update', '>=', $this->semester->tanggal_mulai);
             $query->where('sekolah_id', $request->sekolah_id);
             if($request->keluar){
                 $query->whereNotNull('jenis_keluar_id');
@@ -358,8 +371,10 @@ class DapodikController extends Controller
         };
         $callback_anggota = function($query) use ($request){
             $query->whereRaw('last_sync >= last_update');
+            $query->whereDate('last_update', '>=', $this->semester->tanggal_mulai);
             $query->whereHas('rombongan_belajar', function($query) use ($request){
                 $query->whereRaw('last_sync >= last_update');
+            $query->whereDate('last_update', '>=', $this->semester->tanggal_mulai);
                 $query->where('sekolah_id', $request->sekolah_id);
                 $query->where('semester_id', $request->semester_id);
                 $query->whereIn('jenis_rombel', [1,8,9]);
@@ -379,8 +394,10 @@ class DapodikController extends Controller
     public function get_pembelajaran($request, $internal = 0){
         $data = Pembelajaran::with(['ptk_terdaftar'])->where(function($query) use ($request){
             $query->whereRaw('last_sync >= last_update');
+            $query->whereDate('last_update', '>=', $this->semester->tanggal_mulai);
             $query->whereHas('rombongan_belajar', function($query) use ($request){
                 $query->whereRaw('last_sync >= last_update');
+            $query->whereDate('last_update', '>=', $this->semester->tanggal_mulai);
                 $query->where('sekolah_id', $request->sekolah_id);
                 $query->where('semester_id', $request->semester_id);
                 $query->whereHas('ptk');
@@ -398,6 +415,7 @@ class DapodikController extends Controller
         $data = Kelas_ekskul::where(function($query) use ($request){
             $query->whereHas('rombongan_belajar', function($query) use ($request){
                 $query->whereRaw('last_sync >= last_update');
+            $query->whereDate('last_update', '>=', $this->semester->tanggal_mulai);
                 $query->where('sekolah_id', $request->sekolah_id);
                 $query->where('semester_id', $request->semester_id);
                 $query->whereHas('ptk');
@@ -412,6 +430,7 @@ class DapodikController extends Controller
     public function get_anggota_ekskul($request, $internal = 0){
         $callback = function($query) use ($request){
             $query->whereRaw('last_sync >= last_update');
+            $query->whereDate('last_update', '>=', $this->semester->tanggal_mulai);
             $query->where('sekolah_id', $request->sekolah_id);
             $query->where('semester_id', $request->semester_id);
             $query->where('jenis_rombel', 51);
@@ -440,6 +459,7 @@ class DapodikController extends Controller
         $data = Dudi::where(function($query) use ($callback){
             $query->whereHas('mou', $callback);
             $query->whereRaw('last_sync >= last_update');
+            $query->whereDate('last_update', '>=', $this->semester->tanggal_mulai);
         })->with(['mou' => $callback]);
         $data = $data->get();
         if($internal){
@@ -448,16 +468,24 @@ class DapodikController extends Controller
         return response()->json(['error' => FALSE, 'dapodik' => $data]);
     }
     public function get_jurusan($request, $internal = 0){
-        $data = Jurusan::where('untuk_smk', 1)->get();
+        $data = Jurusan::where(function($query) use ($request){
+            $query->whereRaw('last_sync >= last_update');
+            $query->whereDate('last_update', '>=', $this->semester->tanggal_mulai);
+            $query->where('untuk_smk', 1);
+        })->get();
         return $data;
     }
     public function get_kurikulum($request, $internal = 0){
-        $data = Kurikulum::get();
+        $data = Kurikulum::where(function($query) use ($request){
+            $query->whereRaw('last_sync >= last_update');
+            $query->whereDate('last_update', '>=', $this->semester->tanggal_mulai);
+        })->get();
         return $data;
     }
     public function get_mata_pelajaran($request, $internal = 0){
         $data = Mata_pelajaran::where(function($query) use ($request){
             $query->whereRaw('last_sync >= last_update');
+            $query->whereDate('last_update', '>=', $this->semester->tanggal_mulai);
             /*if($request->updated_at){
                 $query->where('last_update >=', $request->updated_at);
             } elseif($request->last_sync){
@@ -469,11 +497,7 @@ class DapodikController extends Controller
     public function get_mata_pelajaran_kurikulum($request, $internal = 0){
         $data = Mata_pelajaran_kurikulum::where(function($query) use ($request){
             $query->whereRaw('last_sync >= last_update');
-            /*if($request->updated_at){
-                $query->where('last_update >=', $request->updated_at);
-            } elseif($request->last_sync){
-                $query->where('last_sync >=', $request->last_sync);
-            }*/
+            $query->whereDate('last_update', '>=', $this->semester->tanggal_mulai);
         })->get();
         return $data;
     }
