@@ -293,10 +293,10 @@ class DapodikController extends Controller
     public function get_sekolah($request, $internal = 0){
         $data = Sekolah::with(['wilayah.parrentRecursive', 'jurusan_sp', 'ptk_terdaftar' => function($query) use ($request){
             $query->whereRaw('last_sync >= last_update');
-            $query->whereDate('last_update', '>=', $this->semester->tanggal_mulai);
+            //$query->whereDate('last_update', '>=', $this->semester->tanggal_mulai);
             $query->whereHas('ptk', function($query){
                 $query->whereRaw('last_sync >= last_update');
-            $query->whereDate('last_update', '>=', $this->semester->tanggal_mulai);
+                //$query->whereDate('last_update', '>=', $this->semester->tanggal_mulai);
                 $query->where('jenis_ptk_id',20);
             });
             $query->where('tahun_ajaran_id', $request->tahun_ajaran_id);
@@ -306,7 +306,7 @@ class DapodikController extends Controller
             $query->with(['ptk.wilayah']);
         }, 'tugas_tambahan' => function($query) use ($request){
             $query->whereRaw('last_sync >= last_update');
-            $query->whereDate('last_update', '>=', $this->semester->tanggal_mulai);
+            //$query->whereDate('last_update', '>=', $this->semester->tanggal_mulai);
             $query->whereHas('ptk');
             $query->where('sekolah_id', $request->sekolah_id);
             $query->where('tst_tambahan', NULL);
