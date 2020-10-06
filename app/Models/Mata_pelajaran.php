@@ -12,4 +12,7 @@ class Mata_pelajaran extends Model
     protected $keyType = 'string';
 	protected $table = 'ref.mata_pelajaran';
     protected $primaryKey = 'mata_pelajaran_id';
+    public function jurusan_smk(){
+        return $this->hasOne('App\Models\Jurusan', 'jurusan_id', 'jurusan_id')->where('untuk_smk', 1);
+    }
 }

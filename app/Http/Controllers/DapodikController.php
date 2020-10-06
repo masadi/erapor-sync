@@ -491,6 +491,7 @@ class DapodikController extends Controller
         $data = Mata_pelajaran::where(function($query) use ($request){
             $query->whereRaw('last_sync >= last_update');
             $query->whereDate('last_update', '>=', $this->semester->tanggal_mulai);
+            $query->whereHas('jurusan_smk');
             /*if($request->updated_at){
                 $query->where('last_update >=', $request->updated_at);
             } elseif($request->last_sync){
