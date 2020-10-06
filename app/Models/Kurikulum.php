@@ -12,4 +12,7 @@ class Kurikulum extends Model
     protected $keyType = 'string';
 	protected $table = 'ref.kurikulum';
     protected $primaryKey = 'kurikulum_id';
+    public function jenjang_smk(){
+        return $this->hasOne('App\Models\Jenjang_pendidikan', 'jenjang_pendidikan_id', 'jenjang_pendidikan_id')->where('jenjang_pendidikan_id', 6);
+    }
 }

@@ -484,6 +484,7 @@ class DapodikController extends Controller
         $data = Kurikulum::where(function($query) use ($request){
             $query->whereRaw('last_sync >= last_update');
             $query->whereDate('last_update', '>=', $this->semester->tanggal_mulai);
+            $query->whereHas('jenjang_smk');
         })->get();
         return $data;
     }
@@ -504,6 +505,7 @@ class DapodikController extends Controller
         $data = Mata_pelajaran_kurikulum::where(function($query) use ($request){
             $query->whereRaw('last_sync >= last_update');
             $query->whereDate('last_update', '>=', $this->semester->tanggal_mulai);
+            $query->whereHas('kurikulum_smk');
         })->get();
         return $data;
     }
