@@ -336,7 +336,7 @@ class DapodikController extends Controller
         $data = Ptk::whereHas('ptk_terdaftar', $callback)->with(['ptk_terdaftar' => $callback, 'wilayah.parrentRecursive', 'rwy_pend_formal' => function($query){
             $query->whereRaw('last_sync >= last_update');
             $query->whereDate('last_update', '>=', $this->semester->tanggal_mulai);
-            $query->where('gelar_akademik_id', '<>', 99999);
+            $query->whereNotIn('gelar_akademik_id', [9999, 99999]);
 		    $query->whereNotNull('gelar_akademik_id');
         }]);
         $data = $data->get();
