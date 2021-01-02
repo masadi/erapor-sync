@@ -379,7 +379,7 @@ class DapodikController extends Controller
             $query->whereDate('last_update', '>=', $this->semester->tanggal_mulai);
             $query->whereHas('rombongan_belajar', function($query) use ($request){
                 $query->whereRaw('last_sync >= last_update');
-            $query->whereDate('last_update', '>=', $this->semester->tanggal_mulai);
+                $query->whereDate('last_update', '>=', $this->semester->tanggal_mulai);
                 $query->where('sekolah_id', $request->sekolah_id);
                 $query->where('semester_id', $request->semester_id);
                 $query->whereIn('jenis_rombel', [1,8,9]);
@@ -389,7 +389,14 @@ class DapodikController extends Controller
         $data = Peserta_didik::where(function($query) use ($callback, $callback_anggota, $request){
             $query->whereHas('registrasi_peserta_didik', $callback);
             $query->whereHas('anggota_rombel', $callback_anggota);
-        })->with(['anggota_rombel' => $callback_anggota, 'anggota_rombel.rombongan_belajar', 'registrasi_peserta_didik' => $callback, 'wilayah.parrentRecursive']);
+        })->with(['anggota_rombel' => $callback_anggota, 'anggota_rombel.rombongan_belajar' => function($query){
+            $query->whereRaw('last_sync >= last_update');
+            $query->whereDate('last_update', '>=', $this->semester->tanggal_mulai);
+            $query->where('sekolah_id', $request->sekolah_id);
+            $query->where('semester_id', $request->semester_id);
+            $query->whereIn('jenis_rombel', [1,8,9]);
+            $query->whereHas('ptk');
+        }, 'registrasi_peserta_didik' => $callback, 'wilayah.parrentRecursive']);
         $data = $data->get();
         if($internal){
             return $data;
