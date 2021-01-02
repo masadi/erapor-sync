@@ -402,7 +402,7 @@ class DapodikController extends Controller
             $query->whereDate('last_update', '>=', $this->semester->tanggal_mulai);
             $query->whereHas('rombongan_belajar', function($query) use ($request){
                 $query->whereRaw('last_sync >= last_update');
-            $query->whereDate('last_update', '>=', $this->semester->tanggal_mulai);
+                $query->whereDate('last_update', '>=', $this->semester->tanggal_mulai);
                 $query->where('sekolah_id', $request->sekolah_id);
                 $query->where('semester_id', $request->semester_id);
                 $query->whereHas('ptk');
