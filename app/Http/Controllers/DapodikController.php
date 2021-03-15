@@ -270,7 +270,7 @@ class DapodikController extends Controller
         Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Mengambil data referensi KD dari server']));
         $this->get_count_kd($request, 1);
         Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Mengirim data referensi KD']));
-        $this->proses_kd();
+        $this->proses_kd($request);
         /*$response = Http::withOptions([
             'verify' => false,
         ])->post('http://app.erapor-smk.net/api/sinkronisasi/get-kd', [
@@ -307,7 +307,7 @@ class DapodikController extends Controller
             $i++;
         }
     }
-    public function proses_kd(){
+    public function proses_kd($request){
         $json_files = Storage::disk('public')->files('kd');
         //dd($json_files);
         foreach($json_files as $json_file){
