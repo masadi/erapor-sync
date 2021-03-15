@@ -321,8 +321,8 @@ class DapodikController extends Controller
             ]);
             //$array = json_decode($response);
             //dd($array);
+            Storage::disk('public')->delete($json_file);
         }
-        Storage::disk('public')->delete($json_files);
 		/*
         foreach($dapodik as $data){
 			$record['inserted'] = $i;
