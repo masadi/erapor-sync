@@ -304,7 +304,7 @@ class DapodikController extends Controller
             if (!File::isDirectory(storage_path('kd'))) {
                 File::makeDirectory(storage_path('kd'));
             }
-            Storage::disk('public')->put('kd/kd_json_'.$i.'.json', $curl_paging->getBody());
+            Storage::disk('public')->put('kd/kd_json_'.$i.'.json', $response->body());
             $i++;
             dd(json_decode($response->body()));
         }
