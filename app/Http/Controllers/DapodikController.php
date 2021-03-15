@@ -284,7 +284,8 @@ class DapodikController extends Controller
         $response = Http::withOptions([
             'verify' => false,
         ])->post('http://app.erapor-smk.net/api/sinkronisasi/get-kd');
-        dump($response->body());
+        $count_kd = json_decode($response->body());
+        echo $count_kd->count;
         dd(json_decode($response->body()));
         return response()->json(['error' => FALSE, 'dapodik' => $data]);
         return response()->json(['status' => 'success', 'data' => 'Kirim data Dapodik ke Aplikasi eRapor SMK selesai!', 'response' => json_decode($response->body()), 'all_data' => NULL]);
