@@ -23,6 +23,8 @@ use App\HelperModel;
 use App\Helpers\Encrypt;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Cookie;
+use File;
+
 class DapodikController extends Controller
 {
     public function __construct()
@@ -291,6 +293,7 @@ class DapodikController extends Controller
         return response()->json(['status' => 'success', 'data' => 'Kirim data Dapodik ke Aplikasi eRapor SMK selesai!', 'response' => json_decode($response->body()), 'all_data' => NULL]);
     }
     public function get_kd($count){
+        $i=1;
         $limit = 500;
         for ($counter = 0; $counter <= $count; $counter += $limit) {
             $response = Http::withOptions([
@@ -298,6 +301,11 @@ class DapodikController extends Controller
             ])->post('http://app.erapor-smk.net/api/sinkronisasi/kd', [
                 'offset' => $counter,
             ]);
+            if (!File::isDirectory(storage_path('kd'))) {
+                File::makeDirectory(storage_path('kd'));
+            }
+            Storage::disk('public')->put('kd/kd_json_'.$i.'.json', $curl_paging->getBody());
+            $i++;
             dd(json_decode($response->body()));
         }
     }
