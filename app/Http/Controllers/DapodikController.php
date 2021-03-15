@@ -315,7 +315,7 @@ class DapodikController extends Controller
             $response = Http::withOptions([
                 'verify' => false,
             ])->post($request->url.'/api/dapodik/kirim-data', [
-                'data' => HelperModel::prepare_send(json_encode($all_data)),
+                'data' => HelperModel::prepare_send(json_encode($all_data->dapodik)),
                 'permintaan' => 'count_kd',
             ]);
             //$array = json_decode($response);
