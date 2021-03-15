@@ -312,10 +312,11 @@ class DapodikController extends Controller
         //dd($json_files);
         foreach($json_files as $json_file){
             $all_data = Storage::disk('public')->get($json_file);
+            $array = json_decode($all_data);
             $response = Http::withOptions([
                 'verify' => false,
             ])->post($request->url.'/api/dapodik/kirim-data', [
-                'data' => HelperModel::prepare_send(json_encode($all_data->dapodik)),
+                'data' => HelperModel::prepare_send(json_encode($array->dapodik)),
                 'permintaan' => 'count_kd',
             ]);
             //$array = json_decode($response);
