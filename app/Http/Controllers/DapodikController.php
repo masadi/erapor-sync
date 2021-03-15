@@ -111,7 +111,7 @@ class DapodikController extends Controller
         if(Storage::disk('public')->exists('kirim_data.json')){
             $data = Storage::disk('public')->get('kirim_data.json');
         } else {
-            $data = ['text' => 'Memulai proses pengiriman data Dapodik ke Aplikasi eRapor SMK'];
+            $data = json_encode(['text' => 'Memulai proses pengiriman data Dapodik ke Aplikasi eRapor SMK']);
         }
         $text = json_decode($data);
         $text = $text->text;
@@ -265,8 +265,25 @@ class DapodikController extends Controller
             'data' => HelperModel::prepare_send(json_encode($all_data)),
             'permintaan' => 'dudi',
         ]);
+        Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Mengambil data referensi KD dari server']));
+        $all_data = $this->get_count_kd($request, 1);
+        /*$response = Http::withOptions([
+            'verify' => false,
+        ])->post('http://app.erapor-smk.net/api/sinkronisasi/get-kd', [
+            'sekolah_id' => $request->sekolah_id,
+            'semester_id' => $request->semester_id,
+            'tahun_ajaran_id' => $request->tahun_ajaran_id,
+            'data' => HelperModel::prepare_send(json_encode($all_data)),
+            'permintaan' => 'dudi',
+        ]);*/
         Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Kirim data Dapodik ke Aplikasi eRapor SMK selesai!']));
         return response()->json(['status' => 'success', 'data' => 'Kirim data Dapodik ke Aplikasi eRapor SMK selesai!', 'response' => json_decode($response->body()), 'all_data' => $all_data]);
+    }
+    public function get_count_kd($request, $internal = 0){
+        $response = Http::withOptions([
+            'verify' => false,
+        ])->post('http://app.erapor-smk.net/api/sinkronisasi/get-kd');
+        return response()->json(['status' => 'success', 'data' => 'Kirim data Dapodik ke Aplikasi eRapor SMK selesai!', 'response' => json_decode($response->body()), 'all_data' => NULL]);
     }
     public function get_wilayah(){
         $data = Wilayah::whereRaw('last_sync >= last_update')->whereDate('last_update', '>=', $this->semester->tanggal_mulai)->orderBy('id_level_wilayah')->get();
