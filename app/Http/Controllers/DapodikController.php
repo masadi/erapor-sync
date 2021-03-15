@@ -285,15 +285,20 @@ class DapodikController extends Controller
             'verify' => false,
         ])->post('http://app.erapor-smk.net/api/sinkronisasi/get-kd');
         $count_kd = json_decode($response->body());
-        echo $count_kd->count;
+        $all_data = $this->get_kd($count_kd->count);
         dd(json_decode($response->body()));
         return response()->json(['error' => FALSE, 'dapodik' => $data]);
         return response()->json(['status' => 'success', 'data' => 'Kirim data Dapodik ke Aplikasi eRapor SMK selesai!', 'response' => json_decode($response->body()), 'all_data' => NULL]);
     }
-    public function get_kd($request, $internal = 0){
-        $i=0;
-		$limit = 500;
+    public function get_kd($count){
+        $limit = 500;
         for ($counter = 0; $counter <= $count; $counter += $limit) {
+            $response = Http::withOptions([
+                'verify' => false,
+            ])->post('http://app.erapor-smk.net/api/sinkronisasi/kd', [
+                'offset' => $counter,
+            ]);
+            dd(json_decode($response->body()));
         }
     }
     public function get_wilayah(){
