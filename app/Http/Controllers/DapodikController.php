@@ -301,13 +301,52 @@ class DapodikController extends Controller
             ])->post('http://app.erapor-smk.net/api/sinkronisasi/kd', [
                 'offset' => $counter,
             ]);
-            if (!File::isDirectory(storage_path('kd'))) {
-                File::makeDirectory(storage_path('kd'));
-            }
             Storage::disk('public')->put('kd/kd_json_'.$i.'.json', $response->body());
             $i++;
-            dd(json_decode($response->body()));
         }
+        $this->proses_kd();
+    }
+    public function proses_kd(){
+        $json_files = Storage::disk('public')->files('kd');
+        dd($json_files);
+        foreach($json_files as $json_file){
+            $response = Storage::disk('public')->get($json_file);
+            $array = json_decode($response);
+            dd($array);
+        }
+		/*
+        foreach($dapodik as $data){
+			$record['inserted'] = $i;
+			Storage::disk('public')->put('proses_kompetensi_dasar.json', json_encode($record));
+			$find = Kompetensi_dasar::find($data->kompetensi_dasar_id);
+			if(!$find){
+				Kompetensi_dasar::updateOrCreate(
+					[
+						'kompetensi_dasar_id' 		=> $data->kompetensi_dasar_id,
+					],
+					[
+						'id_kompetensi'				=> $data->id_kompetensi,
+						'kompetensi_id'				=> $data->kompetensi_id,
+						'mata_pelajaran_id'			=> $data->mata_pelajaran_id,
+						'kelas_10'					=> $data->kelas_10,
+						'kelas_11'					=> $data->kelas_11,
+						'kelas_12'					=> $data->kelas_12,
+						'kelas_13'					=> $data->kelas_13,
+						'aktif'						=> $data->aktif,
+						'kurikulum'					=> $data->kurikulum,
+						'id_kompetensi_nas'			=> $data->id_kompetensi_nas,
+						'kompetensi_dasar'			=> trim($data->kompetensi_dasar),
+						'kompetensi_dasar_alias'	=> $data->kompetensi_dasar_alias,
+						'created_at'				=> $data->created_at,
+						'updated_at'				=> $data->updated_at,
+						'deleted_at'				=> $data->deleted_at,
+						'last_sync'					=> $data->last_sync,
+					]
+				);
+			}
+			$i++;
+		}
+        */
     }
     public function get_wilayah(){
         $data = Wilayah::whereRaw('last_sync >= last_update')->whereDate('last_update', '>=', $this->semester->tanggal_mulai)->orderBy('id_level_wilayah')->get();
