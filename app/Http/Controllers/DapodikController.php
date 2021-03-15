@@ -120,7 +120,6 @@ class DapodikController extends Controller
     public function kirim_data(Request $request){
         Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Mengirim data Referensi Wilayah']));
         $all_data = $this->get_count_kd($request, 1);
-        dd($all_data);
         $all_data = $this->get_wilayah();
         $response = Http::withOptions([
             'verify' => false,
