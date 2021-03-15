@@ -121,7 +121,6 @@ class DapodikController extends Controller
     }
     public function kirim_data(Request $request){
         Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Mengirim data Referensi Wilayah']));
-        $all_data = $this->get_count_kd($request, 1);
         $all_data = $this->get_wilayah();
         $response = Http::withOptions([
             'verify' => false,
@@ -269,7 +268,9 @@ class DapodikController extends Controller
             'permintaan' => 'dudi',
         ]);
         Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Mengambil data referensi KD dari server']));
-        $all_data = $this->get_count_kd($request, 1);
+        $this->get_count_kd($request, 1);
+        Storage::disk('public')->put('kirim_data.json', json_encode(['text' => 'Mengirim data referensi KD']));
+        $this->proses_kd();
         /*$response = Http::withOptions([
             'verify' => false,
         ])->post('http://app.erapor-smk.net/api/sinkronisasi/get-kd', [
@@ -287,10 +288,11 @@ class DapodikController extends Controller
             'verify' => false,
         ])->post('http://app.erapor-smk.net/api/sinkronisasi/get-kd');
         $count_kd = json_decode($response->body());
-        $all_data = $this->get_kd($count_kd->count);
+        $this->get_kd($count_kd->count);
+        /*$all_data = $this->get_kd($count_kd->count);
         dd(json_decode($response->body()));
         return response()->json(['error' => FALSE, 'dapodik' => $data]);
-        return response()->json(['status' => 'success', 'data' => 'Kirim data Dapodik ke Aplikasi eRapor SMK selesai!', 'response' => json_decode($response->body()), 'all_data' => NULL]);
+        return response()->json(['status' => 'success', 'data' => 'Kirim data Dapodik ke Aplikasi eRapor SMK selesai!', 'response' => json_decode($response->body()), 'all_data' => NULL]);*/
     }
     public function get_kd($count){
         $i=1;
@@ -304,11 +306,10 @@ class DapodikController extends Controller
             Storage::disk('public')->put('kd/kd_json_'.$i.'.json', $response->body());
             $i++;
         }
-        $this->proses_kd();
     }
     public function proses_kd(){
         $json_files = Storage::disk('public')->files('kd');
-        dd($json_files);
+        //dd($json_files);
         foreach($json_files as $json_file){
             $response = Storage::disk('public')->get($json_file);
             $array = json_decode($response);
