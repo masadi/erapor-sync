@@ -389,7 +389,7 @@ class DapodikController extends Controller
         $data = Peserta_didik::where(function($query) use ($callback, $callback_anggota, $request){
             $query->whereHas('registrasi_peserta_didik', $callback);
             $query->whereHas('anggota_rombel', $callback_anggota);
-        })->with(['anggota_rombel' => $callback_anggota, 'anggota_rombel.rombongan_belajar' => function($query){
+        })->with(['anggota_rombel' => $callback_anggota, 'anggota_rombel.rombongan_belajar' => function($query) use ($request){
             $query->whereRaw('last_sync >= last_update');
             $query->whereDate('last_update', '>=', $this->semester->tanggal_mulai);
             $query->where('sekolah_id', $request->sekolah_id);
