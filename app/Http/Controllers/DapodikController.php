@@ -303,8 +303,10 @@ class DapodikController extends Controller
             ])->post('http://app.erapor-smk.net/api/sinkronisasi/kd', [
                 'offset' => $counter,
             ]);
-            Storage::disk('public')->put('kd/kd_json_'.$i.'.json', $response->body());
-            $i++;
+            if($response->successful()){
+                Storage::disk('public')->put('kd/kd_json_'.$i.'.json', $response->body());
+                $i++;
+            }
         }
     }
     public function proses_kd($request){
