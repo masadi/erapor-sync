@@ -78,7 +78,7 @@ class DapodikController extends Controller
                         'sekolah_id' => $user->sekolah_id,
                         'name' => $user->nama,
                         'email' => $user->username,
-                        'password' => $encrypt->doDecrypt(),
+                        'password' => $user->password,//$encrypt->doDecrypt(),
                         'password_dapo' => $user->password,
                     ];
                 }
